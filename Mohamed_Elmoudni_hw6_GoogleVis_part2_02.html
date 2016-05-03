@@ -1,0 +1,54 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+ <!--- Using Google Charts for visualization, bootstrap to set up page, jquery for working with csv's -->
+ <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+   <script type="text/javascript" src="//www.google.com/jsapi"></script>
+  <!-- <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script> -->
+
+
+  <script src="https://rawgit.com/simonnyc/IS608-NYC-data/master/jquery.csv-0.71.js"></script>
+
+
+// load the visualization library from Google and set a listener
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+
+          <script type="text/javascript">
+          google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+// this has to be a global function
+function drawChart() {
+   // grab the CSV
+   $.get("https://raw.githubusercontent.com/simonnyc/IS608-NYC-data/master/Gchart_Assignment06_coffee_df12.csv", function(csvString) {
+      // transform the CSV string into a 2-dimensional array
+      var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
+
+      // this new DataTable object holds all the data
+      var data = new google.visualization.arrayToDataTable(arrayData);
+
+      // this view can select a subset of the data at a time
+      var view = new google.visualization.DataView(data);
+      view.setColumns([0,1]);
+
+     var options = {
+      title : 'Coffee Shops Yearly Critical Violation ',
+      vAxis: {title: 'Number of Critical Violations'},
+      hAxis: {title: 'Year'},
+      seriesType: 'bars',
+      series: {6: {type: 'line'}}
+    };
+
+    var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+  });
+}
+drawChart();
+        </script>
+  </head>
+  <body>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+  </body>
+</html>
