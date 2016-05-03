@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>D3 Assingment 06 </title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <!-- loading new font from Google to try out.. -->
+    <style>
+      .axis text {
+        font: 7pt sans-serif;
+        font-family: 'Poiret One', cursive;
+      }
+      .axis path, .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+      .y.axis path, .y.axis line {
+        stroke: none;
+      }
+
+    </style>
+  </head>
+  <body>
+    <script>
+
+     <!-- setting up frame size -->
+      var outerWidth = 900;
+      var outerHeight = 700;
+
+      <!-- setting the margins -->
+      var margin = { left: 130, top: 90, right: 0, bottom: 30 };
+      var barPadding = 0.2;
+      var innerWidth  = outerWidth  - margin.left - margin.right;
+      var innerHeight = outerHeight - margin.top  - margin.bottom;
+
+       <!-- creating vars to hold x and y data -->
+      var xColumn = "SCORE";
+      var yColumn = "RESTAURANT";
+
+    <!-- labeling the x-axis and y-axis -->
+     var xAxisLabelText = "Inspection Score";
+     var xAxisLabelOffset = 30;
+     var yAxisLabelText = "Restaurant Name ";
+     var yAxisLabelOffset = 110;
+
+      var svg = d3.select("body").append("svg")
+        .attr("width",  outerWidth)
+        .attr("height", outerHeight);
+
+     <!-- apply the g element to group and transform the data -->
+      var g = svg.append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      var xAxisG = g.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + innerHeight + ")");
+      var yAxisG = g.append("g")
+        .attr("class", "y axis");
+
+      svg.append("text")
+        .attr("x", (innerWidth / 2))
+        .attr("y", margin.top - (margin.top / 2))
+        .attr("text-anchor", "middle")
+        .style("font-size", "24px")
+        .style("text-decoration", "underline")
+        .text("The worst Score Restaurants (2016)");
+
+
+
+      var xAxisLabel = xAxisG.append("text")
+        .style("text-anchor", "middle")
+        .attr("x", innerWidth / 2)
+        .attr("y", xAxisLabelOffset)
+        .attr("class", "label")
+        .text(xAxisLabelText);
+      var yAxisG = g.append("g")
+        .attr("class", "y axis");
+      var yAxisLabel = yAxisG.append("text")
+        .style("text-anchor", "middle")
+        .attr("transform", "translate(-" + yAxisLabelOffset + "," + (innerHeight / 2) + ") rotate(-90)")
+        .attr("class", "label")
+        .text(yAxisLabelText);
+
+      <!-- scale the data element using linear function -->
+      var xScale = d3.scale.linear().range(      [0, innerWidth]);
+      var yScale = d3.scale.ordinal().rangeBands([0, innerHeight], barPadding);
+
+      var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
+        // .ticks(20)
+        .tickFormat(d3.format("s"))
+        .outerTickSize(1);          // Turn off the marks at the end of the axis.
+      var yAxis = d3.svg.axis().scale(yScale).orient("left")
+        .outerTickSize(1);          // Turn off the marks at the end of the axis.
+
+      function render(data){
+
+        xScale.domain([0, d3.max(data, function (d){ return d[xColumn]; })]);
+        yScale.domain(       data.map( function (d){ return d[yColumn]; }));
+
+        xAxisG.call(xAxis);
+        yAxisG.call(yAxis);
+
+       <!-- Bind the data with rectangular shapes -->
+        var bars = g.selectAll("rect").data(data);
+
+         <!-- the data is being entered as rectangles -->
+        bars.enter().append("rect")
+          .attr("height", yScale.rangeBand());
+
+       <!-- Data update the phase -->
+        bars
+          .attr("x", 0)
+          .attr("y",     function (d){ return yScale(d[yColumn]); })
+          .attr("width", function (d){ return xScale(d[xColumn]); });
+        bars.exit().remove();
+      }
+
+      function type(d){
+        d.count = +d.count;
+        return d;
+      }
+
+      <!-- loading president data -->
+      d3.csv("https://raw.githubusercontent.com/simonnyc/IS608-NYC-data/master/D3_assign06.csv", type, render);
+
+    </script>
+  </body>
+</html>
