@@ -1,0 +1,49 @@
+<html>
+
+ <head>
+
+   <title>SUBWAYe</title>
+   <h1>SUBWAY Sandwich Shop Scores since 2013 </h1>
+   <h5>Please hover over the rings for addition SUBWAY metrics  </h5>
+
+
+ </head>
+<div id="chartContainer">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+     <script src="https://raw.githubusercontent.com/PMSI-AlignAlytics/dimple/master/lib/d3.v3.4.8.js"></script>
+     <script src="http://dimplejs.org/dist/dimple.v2.2.0.min.js"></script>
+
+
+
+     <script type="text/javascript">
+      var svg = dimple.newSvg("#chartContainer", 590, 400);
+      d3.csv("https://raw.githubusercontent.com/simonnyc/IS608-NYC-data/master/D3_assign06_sub.csv", function (data) {
+
+      // Filter for a single Restaurant
+      data = dimple.filterData(data, "RESTAURANT", "SUBWAY");
+      //data = dimple.filterData(data, "GRADE", "B");
+
+      // Create and Position a Chart
+      var myChart = new dimple.chart(svg, data);
+       myChart.setBounds(75, 30, 480, 300)
+      var x = myChart.addCategoryAxis("x", "YEAR")
+      myChart.addMeasureAxis("y", "SCORE");
+       // Order the x axis by date
+      x.addOrderRule("Date");
+       myChart.addMeasureAxis("p", "Unit Sales");
+
+      // Min critical count will be green, middle price yellow and max red
+      myChart.addColorAxis("count", ["green", "yellow", "red"]);
+
+      // Add a thick line with markers
+      var lines = myChart.addSeries(null, dimple.plot.line);
+      lines.lineWeight = 6;
+      lines.lineMarkers = true;
+
+      // Draw the chart
+      myChart.draw();
+
+    });
+  </script>
+</div>
+</html>
